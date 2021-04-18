@@ -9,6 +9,7 @@ import com.cloud.urlshortenerservice.service.UrlService;
 import com.cloud.urlshortenerservice.util.TokenVerification;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -58,7 +59,7 @@ public class UrlController {
     }
 
     @GetMapping("/{key}")
-    public ResponseEntity<URI> redirect(@PathVariable String key) throws URISyntaxException {
+    public ResponseEntity<HttpHeaders> redirect(@PathVariable String key) throws URISyntaxException {
         Optional<Url> url = urlService.getUrlByShortenKey(key);
         if (url.isEmpty()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -69,7 +70,10 @@ public class UrlController {
         }
 
         URI uri = new URI(url.get().getOriginalUrl());
-        return new ResponseEntity<>(uri, HttpStatus.SEE_OTHER);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(uri);
+
+        return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
     }
 
     @PostMapping("/urls")

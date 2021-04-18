@@ -3,9 +3,6 @@ package com.cloud.urlshortenerservice.config;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.Protocol;
@@ -27,7 +24,7 @@ public class RedisConfiguration {
                     Protocol.DEFAULT_TIMEOUT,
                     redisURI.getUserInfo().split(":",2)[1]);
         } catch (URISyntaxException e) {
-            throw new RuntimeException("Redis couldn't be configured from URL in REDISTOGO_URL env var: "+
+            throw new RuntimeException("Redis couldn't be configured from URL in REDIS_URL env var: "+
                     System.getenv("REDIS_URL"));
         }
     }
