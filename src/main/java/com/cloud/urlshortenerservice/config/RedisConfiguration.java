@@ -20,7 +20,7 @@ public class RedisConfiguration {
     @Bean
     public JedisPool getJedisPool() {
         try {
-            URI redisURI = new URI(System.getenv("REDISTOGO_URL"));
+            URI redisURI = new URI(System.getenv("REDIS_URL"));
             return new JedisPool(new JedisPoolConfig(),
                     redisURI.getHost(),
                     redisURI.getPort(),
@@ -28,7 +28,7 @@ public class RedisConfiguration {
                     redisURI.getUserInfo().split(":",2)[1]);
         } catch (URISyntaxException e) {
             throw new RuntimeException("Redis couldn't be configured from URL in REDISTOGO_URL env var: "+
-                    System.getenv("REDISTOGO_URL"));
+                    System.getenv("REDIS_URL"));
         }
     }
 
