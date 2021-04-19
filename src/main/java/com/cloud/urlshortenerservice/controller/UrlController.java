@@ -7,6 +7,8 @@ import com.cloud.urlshortenerservice.model.UrlDto;
 import com.cloud.urlshortenerservice.model.UrlRequestDto;
 import com.cloud.urlshortenerservice.model.UserDto;
 import com.cloud.urlshortenerservice.service.UrlService;
+import com.cloud.urlshortenerservice.util.AppResponse;
+import com.cloud.urlshortenerservice.util.AppResponses;
 import com.cloud.urlshortenerservice.util.TokenVerification;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +36,7 @@ public class UrlController {
     }
 
     @PostMapping("/shorten")
-    public ResponseEntity<Url> shortenURL(@RequestBody UrlRequestDto urlRequest) throws UserAuthenticationException {
+    public AppResponse<Url> shortenURL(@RequestBody UrlRequestDto urlRequest) throws UserAuthenticationException {
 
         UrlValidator urlValidator = new UrlValidator();
         if (!urlValidator.isValid(urlRequest.getOriginalUrl())){
@@ -55,7 +57,7 @@ public class UrlController {
         }
 
         Url generatedUrl = urlService.createShortUrl(urlDto, userDto);
-        return new ResponseEntity<>(generatedUrl, HttpStatus.OK);
+        return AppResponses.from(generatedUrl);
     }
 
     @GetMapping("/{key}")
@@ -78,17 +80,17 @@ public class UrlController {
     }
 
     @PostMapping("/urls")
-    public ResponseEntity<List<Url>> showURLs(@RequestBody TokenDto token) throws UserAuthenticationException {
+    public AppResponse<List<Url>> showURLs(@RequestBody TokenDto token) throws UserAuthenticationException {
 
         UserDto userDto = TokenVerification.verify(token.getToken());
-        return new ResponseEntity<>(urlService.getAllUrlsByUserId(userDto.getUserId(), userDto.getAccountType()), HttpStatus.OK);
+        return AppResponses.from(urlService.getAllUrlsByUserId(userDto.getUserId(), userDto.getAccountType()));
     }
 
     @DeleteMapping("/{key}")
-    public ResponseEntity<Optional<Url>> deleteURL(@PathVariable String key, @RequestBody TokenDto token) throws UserAuthenticationException {
+    public AppResponse<Optional<Url>> deleteURL(@PathVariable String key, @RequestBody TokenDto token) throws UserAuthenticationException {
 
         UserDto userDto = TokenVerification.verify(token.getToken());
-        return new ResponseEntity<>(urlService.removeUrlByKeyAndUserId(key, userDto.getUserId()), HttpStatus.OK);
+        return AppResponses.from(urlService.removeUrlByKeyAndUserId(key, userDto.getUserId()));
     }
 
 }
