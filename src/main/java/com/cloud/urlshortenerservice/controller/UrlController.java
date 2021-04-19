@@ -20,7 +20,7 @@ import java.sql.Timestamp;
 import java.util.*;
 
 @RestController
-@RequestMapping("/api/")
+@RequestMapping
 public class UrlController {
 
     private final static String ERR_URL_NOT_VALID = "You have to enter a valid URL!";
@@ -35,7 +35,6 @@ public class UrlController {
     @PostMapping("/shorten")
     public ResponseEntity<Url> shortenURL(@RequestBody UrlRequestDto urlRequestDto) throws UserAuthenticationException {
 
-
         UrlValidator urlValidator = new UrlValidator();
         if (!urlValidator.isValid(urlRequestDto.getOriginalUrl())){
             throw new IllegalArgumentException(ERR_URL_NOT_VALID);
@@ -44,7 +43,7 @@ public class UrlController {
         UserDto userDto = TokenVerification.verify(urlRequestDto.getToken());
         UrlDto urlDto = new UrlDto(urlRequestDto.getShortKey(), urlRequestDto.getOriginalUrl());
 
-        // Set expiration date as 30 day after
+        // Set expiration date as 30 day after if user is not premium
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Calendar expirationDate = Calendar.getInstance();
         expirationDate.setTime(timestamp);
@@ -60,6 +59,7 @@ public class UrlController {
 
     @GetMapping("/{key}")
     public ResponseEntity<HttpHeaders> redirect(@PathVariable String key) throws URISyntaxException {
+
         Optional<Url> url = urlService.getUrlByShortenKey(key);
         if (url.isEmpty()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

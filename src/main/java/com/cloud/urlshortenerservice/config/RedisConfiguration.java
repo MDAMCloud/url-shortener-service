@@ -28,6 +28,7 @@ public class RedisConfiguration {
                     System.getenv("REDIS_URL"));
         }
     }
+    
 
     /*
     @Bean
