@@ -5,6 +5,12 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+public class WebConfiguration  {
+
+
+}
+
+/*
 @EnableWebMvc
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
@@ -14,3 +20,4 @@ public class WebConfiguration implements WebMvcConfigurer {
         registry.addViewController("/").setViewName("index.html");
     }
 }
+*/

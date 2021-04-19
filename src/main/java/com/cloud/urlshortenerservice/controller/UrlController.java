@@ -20,7 +20,7 @@ import java.sql.Timestamp;
 import java.util.*;
 
 @RestController
-@RequestMapping
+@RequestMapping("/api")
 public class UrlController {
 
     private final static String ERR_URL_NOT_VALID = "You have to enter a valid URL!";
@@ -58,7 +58,7 @@ public class UrlController {
     }
 
     @GetMapping("/{key}")
-    public ResponseEntity<HttpHeaders> redirect(@PathVariable String key) throws URISyntaxException {
+    public ResponseEntity<?> redirect(@PathVariable String key) throws URISyntaxException {
 
         Optional<Url> url = urlService.getUrlByShortenKey(key);
         if (url.isEmpty()){
