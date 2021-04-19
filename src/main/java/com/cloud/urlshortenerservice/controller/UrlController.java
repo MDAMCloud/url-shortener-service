@@ -2,6 +2,7 @@ package com.cloud.urlshortenerservice.controller;
 
 import com.cloud.urlshortenerservice.entity.Url;
 import com.cloud.urlshortenerservice.exception.UserAuthenticationException;
+import com.cloud.urlshortenerservice.model.TokenDto;
 import com.cloud.urlshortenerservice.model.UrlDto;
 import com.cloud.urlshortenerservice.model.UrlRequestDto;
 import com.cloud.urlshortenerservice.model.UserDto;
@@ -33,15 +34,15 @@ public class UrlController {
     }
 
     @PostMapping("/shorten")
-    public ResponseEntity<Url> shortenURL(@RequestBody UrlRequestDto urlRequestDto) throws UserAuthenticationException {
+    public ResponseEntity<Url> shortenURL(@RequestBody UrlRequestDto urlRequest) throws UserAuthenticationException {
 
         UrlValidator urlValidator = new UrlValidator();
-        if (!urlValidator.isValid(urlRequestDto.getOriginalUrl())){
+        if (!urlValidator.isValid(urlRequest.getOriginalUrl())){
             throw new IllegalArgumentException(ERR_URL_NOT_VALID);
         }
 
-        UserDto userDto = TokenVerification.verify(urlRequestDto.getToken());
-        UrlDto urlDto = new UrlDto(urlRequestDto.getShortKey(), urlRequestDto.getOriginalUrl());
+        UserDto userDto = TokenVerification.verify(urlRequest.getToken());
+        UrlDto urlDto = new UrlDto(urlRequest.getShortKey(), urlRequest.getOriginalUrl());
 
         // Set expiration date as 30 day after if user is not premium
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -77,16 +78,16 @@ public class UrlController {
     }
 
     @PostMapping("/urls")
-    public ResponseEntity<List<Url>> showURLs(@RequestBody String token) throws UserAuthenticationException {
+    public ResponseEntity<List<Url>> showURLs(@RequestBody TokenDto token) throws UserAuthenticationException {
 
-        UserDto userDto = TokenVerification.verify(token);
+        UserDto userDto = TokenVerification.verify(token.getToken());
         return new ResponseEntity<>(urlService.getAllUrlsByUserId(userDto.getUserId(), userDto.getAccountType()), HttpStatus.OK);
     }
 
     @DeleteMapping("/{key}")
-    public ResponseEntity<Optional<Url>> deleteURL(@PathVariable String key, @RequestBody String token) throws UserAuthenticationException {
+    public ResponseEntity<Optional<Url>> deleteURL(@PathVariable String key, @RequestBody TokenDto token) throws UserAuthenticationException {
 
-        UserDto userDto = TokenVerification.verify(token);
+        UserDto userDto = TokenVerification.verify(token.getToken());
         return new ResponseEntity<>(urlService.removeUrlByKeyAndUserId(key, userDto.getUserId()), HttpStatus.OK);
     }
 
