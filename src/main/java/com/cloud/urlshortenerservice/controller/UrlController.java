@@ -1,7 +1,6 @@
 package com.cloud.urlshortenerservice.controller;
 
 import com.cloud.urlshortenerservice.entity.Url;
-import com.cloud.urlshortenerservice.exception.UserAuthenticationException;
 import com.cloud.urlshortenerservice.model.TokenDto;
 import com.cloud.urlshortenerservice.model.UrlDto;
 import com.cloud.urlshortenerservice.model.UrlRequestDto;
@@ -27,6 +26,7 @@ import java.util.*;
 public class UrlController {
 
     private final static String ERR_URL_NOT_VALID = "You have to enter a valid URL!";
+    private static final String ERR_USER_AUTH = "The user is not logged in!";
 
     private final UrlService urlService;
 
@@ -36,14 +36,17 @@ public class UrlController {
     }
 
     @PostMapping("/shorten")
-    public AppResponse<Url> shortenURL(@RequestBody UrlRequestDto urlRequest) throws UserAuthenticationException {
+    public AppResponse<Url> shortenURL(@RequestBody UrlRequestDto urlRequest) {
 
         UrlValidator urlValidator = new UrlValidator();
         if (!urlValidator.isValid(urlRequest.getOriginalUrl())){
-            throw new IllegalArgumentException(ERR_URL_NOT_VALID);
+            return AppResponses.failure(ERR_URL_NOT_VALID);
         }
 
         UserDto userDto = TokenVerification.verify(urlRequest.getToken());
+        if (userDto == null){
+            return AppResponses.failure(ERR_USER_AUTH);
+        }
         UrlDto urlDto = new UrlDto(urlRequest.getShortKey(), urlRequest.getOriginalUrl());
 
         // Set expiration date as 30 day after if user is not premium
@@ -80,16 +83,22 @@ public class UrlController {
     }
 
     @PostMapping("/urls")
-    public AppResponse<List<Url>> showURLs(@RequestBody TokenDto token) throws UserAuthenticationException {
+    public AppResponse<List<Url>> showURLs(@RequestBody TokenDto token) {
 
         UserDto userDto = TokenVerification.verify(token.getToken());
+        if (userDto == null){
+            return AppResponses.failure(ERR_USER_AUTH);
+        }
         return AppResponses.from(urlService.getAllUrlsByUserId(userDto.getUserId(), userDto.getAccountType()));
     }
 
     @DeleteMapping("/{key}")
-    public AppResponse<Optional<Url>> deleteURL(@PathVariable String key, @RequestBody TokenDto token) throws UserAuthenticationException {
+    public AppResponse<Optional<Url>> deleteURL(@PathVariable String key, @RequestBody TokenDto token) {
 
         UserDto userDto = TokenVerification.verify(token.getToken());
+        if (userDto == null){
+            return AppResponses.failure(ERR_USER_AUTH);
+        }
         return AppResponses.from(urlService.removeUrlByKeyAndUserId(key, userDto.getUserId()));
     }
 
