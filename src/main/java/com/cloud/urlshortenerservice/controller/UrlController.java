@@ -43,10 +43,16 @@ public class UrlController {
             return AppResponses.failure(ERR_URL_NOT_VALID);
         }
 
-        UserDto userDto = TokenVerification.verify(urlRequest.getToken());
-        if (userDto == null){
-            return AppResponses.failure(ERR_USER_AUTH);
+        UserDto userDto;
+        if (urlRequest.getToken() == null || urlRequest.getToken().length() == 0){
+            userDto = null;
+        } else {
+            userDto = TokenVerification.verify(urlRequest.getToken());
+            if (userDto == null){
+                return AppResponses.failure(ERR_USER_AUTH);
+            }
         }
+
         UrlDto urlDto = new UrlDto(urlRequest.getShortKey(), urlRequest.getOriginalUrl());
 
         // Set expiration date as 30 day after if user is not premium

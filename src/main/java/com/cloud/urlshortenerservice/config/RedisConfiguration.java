@@ -16,7 +16,7 @@ import java.net.URISyntaxException;
 @Configuration
 @EnableCaching
 public class RedisConfiguration {
-
+/*
     @Bean
     public JedisPool getJedisPool() {
         try {
@@ -31,11 +31,9 @@ public class RedisConfiguration {
                     System.getenv("REDIS_URL"));
         }
     }
-    
-    
+*/
 
 
-/*
     @Bean
     public JedisConnectionFactory jedisConnectionFactory() {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration("localhost", 6379);
@@ -48,5 +46,5 @@ public class RedisConfiguration {
         template.setConnectionFactory(jedisConnectionFactory());
         return template;
     }
-*/
+
 }

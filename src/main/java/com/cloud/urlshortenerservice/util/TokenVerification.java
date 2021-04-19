@@ -14,10 +14,6 @@ public class TokenVerification {
 
     public static UserDto verify(String token) throws RuntimeException {
 
-        if (token == null || token.length() == 0){
-            return null;
-        }
-
         DecodedJWT jwt = JWT.decode(token);
 
         UserDto userDto = new UserDto(  jwt.getClaims().get("userId").asString(),
