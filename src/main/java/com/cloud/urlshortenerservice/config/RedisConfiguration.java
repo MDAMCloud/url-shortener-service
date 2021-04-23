@@ -29,7 +29,6 @@ public class RedisConfiguration {
         }
     }
 
-
 /*
     // LOCAL CONNECTION
     @Bean

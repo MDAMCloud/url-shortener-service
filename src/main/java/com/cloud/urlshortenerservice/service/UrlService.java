@@ -32,12 +32,13 @@ public class UrlService {
         url.setOriginalUrl(urlDto.getOriginalUrl());
         url.setExpirationDate(urlDto.getExpirationDate());
 
-        if( userDto != null && (urlDto.getShortenKey() != null) && (urlDto.getShortenKey().length() != 0)){
-            url.setShortenKey(urlDto.getShortenKey());
+        String shortKey;
+        if( userDto != null && (urlDto.getShortenKey() != null) && (urlDto.getShortenKey().trim().length() != 0)){
+            shortKey = urlDto.getShortenKey().replace(" ", "");
         } else {
-            String shortKey = RandomStringUtils.randomAlphanumeric(6);
-            url.setShortenKey(shortKey);
+            shortKey = RandomStringUtils.randomAlphanumeric(6);
         }
+        url.setShortenKey(shortKey);
 
         if (urlRepository.findByShortenKey(url.getShortenKey()).isPresent()){
             return null;
