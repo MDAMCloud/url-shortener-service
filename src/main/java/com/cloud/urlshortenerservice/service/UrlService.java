@@ -11,17 +11,13 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UrlService {
-
-    private final static String ERR_DUPLICATE_KEY = "This key already exists!";
 
     private final UrlRepository urlRepository;
 
@@ -44,7 +40,7 @@ public class UrlService {
         }
 
         if (urlRepository.findByShortenKey(url.getShortenKey()).isPresent()){
-            throw new IllegalArgumentException(ERR_DUPLICATE_KEY);
+            return null;
         }
 
         if (userDto != null){
@@ -80,10 +76,6 @@ public class UrlService {
     @CacheEvict(value = "urls", key = "#shortenKey")
     public void removeUrlByKey(String shortenKey){
         urlRepository.deleteByShortenKey(shortenKey);
-    }
-
-    public List<Url> getAllUrls(){
-        return urlRepository.findAll();
     }
 
 }

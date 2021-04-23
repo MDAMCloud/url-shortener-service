@@ -22,11 +22,12 @@ import java.sql.Timestamp;
 import java.util.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/")
 public class UrlController {
 
     private final static String ERR_URL_NOT_VALID = "You have to enter a valid URL!";
     private static final String ERR_USER_AUTH = "The user is not logged in!";
+    private final static String ERR_DUPLICATE_KEY = "This key already exists!";
 
     private final UrlService urlService;
 
@@ -66,6 +67,9 @@ public class UrlController {
         }
 
         Url generatedUrl = urlService.createShortUrl(urlDto, userDto);
+        if (generatedUrl == null){
+            return AppResponses.failure(ERR_DUPLICATE_KEY);
+        }
         return AppResponses.from(generatedUrl);
     }
 
@@ -74,11 +78,15 @@ public class UrlController {
 
         Optional<Url> url = urlService.getUrlByShortenKey(key);
         if (url.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setLocation(URI.create("/error.html"));
+            return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
         }
         if (url.get().getExpirationDate() != null && (new Timestamp(Long.parseLong(url.get().getExpirationDate()))).before(new Date())){
             urlService.removeUrlByKey(url.get().getShortenKey());
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setLocation(URI.create("/error.html"));
+            return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
         }
 
         URI uri = new URI(url.get().getOriginalUrl());

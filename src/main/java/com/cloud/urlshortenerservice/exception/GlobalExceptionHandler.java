@@ -13,7 +13,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String,String>> handleAnyException(HttpServletRequest request, Exception e){
+    public ResponseEntity<Map<String, String>> handleAnyException(HttpServletRequest request, Exception e){
         Map<String, String> map = new HashMap<>();
         map.put("ERROR", "An unknown error has been occurred!");
         return new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
