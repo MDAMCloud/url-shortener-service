@@ -79,13 +79,13 @@ public class UrlController {
         Optional<Url> url = urlService.getUrlByShortenKey(key);
         if (url.isEmpty()){
             HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setLocation(URI.create("/error.html"));
+            httpHeaders.setLocation(URI.create("/error"));
             return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
         }
         if (url.get().getExpirationDate() != null && (new Timestamp(Long.parseLong(url.get().getExpirationDate()))).before(new Date())){
             urlService.removeUrlByKey(url.get().getShortenKey());
             HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setLocation(URI.create("/error.html"));
+            httpHeaders.setLocation(URI.create("/error"));
             return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
         }
 
